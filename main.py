@@ -4,6 +4,8 @@ import pygame
 import tkinter as tk
 from tkinter import ttk, PhotoImage
 
+from Data.settings import get_data
+
 
 class PomodoroTimer:
     def __init__(self):
@@ -71,6 +73,10 @@ class PomodoroTimer:
         # Pomodoro Counter
         self.pomodoro_counter_label = ttk.Label(self.grid_layout, text=f"Pomodoros: {self.pomodoros}", font=("Ubuntu", 16))
         self.pomodoro_counter_label.grid(row=1, column=0, columnspan=3, pady=10)
+        
+        # Theme
+        if self.get_theme() == "dark":
+            self.root['background'] = '#121212'
 
         # Runs the application
         self.root.mainloop()
@@ -200,6 +206,11 @@ class PomodoroTimer:
     def audio_play(self):
         pygame.mixer.music.load("Audio/ring.mp3")
         pygame.mixer.music.play(loops=0)
+
+
+    def get_theme(self):
+        data = get_data()
+        return data["settings"]["theme"]
 
 
 if __name__ == '__main__':
