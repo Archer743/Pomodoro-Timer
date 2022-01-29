@@ -27,6 +27,7 @@ class PomodoroTimer:
         self.tab1 = ttk.Frame(self.tabs, width=600, height=100)  # Pomodoro    Tab
         self.tab2 = ttk.Frame(self.tabs, width=600, height=100)  # Short Break Tab
         self.tab3 = ttk.Frame(self.tabs, width=600, height=100)  # Long  Break Tab
+        self.tab4 = ttk.Frame(self.tabs, width=600, height=100)  # Settings    Tab
 
         # Labels
         self.pomodoro_timer_label = ttk.Label(self.tab1, text="25:00", font=("Ubuntu", 48))
@@ -94,7 +95,7 @@ class PomodoroTimer:
         timer_id = self.last_tab_index
 
         if timer_id == 0:
-            self.timer(5, 0)
+            self.timer(25 * 60, 0)
             
             if not self.stopped or self.skipped:
                 self.pomodoros += 1
@@ -113,7 +114,7 @@ class PomodoroTimer:
                 self.start_timer()
 
         elif timer_id == 1:
-            self.timer(5, 1)
+            self.timer(5 * 60, 1)
 
             if not self.stopped or self.skipped:
                 if not self.stopped:
@@ -124,7 +125,7 @@ class PomodoroTimer:
                 self.start_timer()
 
         elif timer_id == 2:
-            self.timer(5, 2)
+            self.timer(15 * 60, 2)
 
             if not self.stopped or self.skipped:
                 if not self.stopped:
