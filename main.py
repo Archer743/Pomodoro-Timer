@@ -208,7 +208,6 @@ class PomodoroTimer:
         pygame.mixer.music.load("Audio/ring.mp3")
         pygame.mixer.music.play(loops=0)
 
-
     def get_theme(self):
         data = get_data()
         return data["settings"]["theme"]
