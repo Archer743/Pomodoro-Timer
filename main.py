@@ -4,7 +4,7 @@ import pygame
 import tkinter as tk
 from tkinter import ttk, PhotoImage
 
-from Data.settings import get_data
+from Data.settings import get_data, update_data
 
 
 class PomodoroTimer:
@@ -14,11 +14,23 @@ class PomodoroTimer:
         self.root.geometry("600x300")
         self.root.title("Pomodoro Timer")
         self.root.tk.call('wm', 'iconphoto', self.root._w, PhotoImage(file="Pictures/tomato.png"))
+        self.root.resizable(0, 0)  # Window's resize feature is disabled
+
+        # Settings
+        self.dark_theme_on = True if self.get_theme() == "dark" else False
+        self.on_image = PhotoImage(file="Pictures/on.png")
+        self.off_image = PhotoImage(file="Pictures/off.png")
         
         # Style
         self.s = ttk.Style()
         self.s.configure("TNotebook.Tab", font=("Ubuntu", 16))  # font - Ubuntu, font size - 16 -> this is for the tab look
         self.s.configure("TButton", font=("Ubuntu", 16))  # font - Ubuntu, font size - 16 -> this is for the button look
+        
+        self.s.configure("Dark.TFrame", background='#121212')  # Style for dark theme (frame)
+        self.s.configure("White.TFrame", background='white')  # Style for white theme (frame)
+
+        self.s.configure("Dark.TButton", font=("Ubuntu", 16), background = '#121212')  # Style for dark theme (button)
+        self.s.configure("White.TButton", font=("Ubuntu", 16), background = 'white')  # Style for white theme (button)
 
         # Tabs
         self.tabs = ttk.Notebook(self.root)
@@ -43,6 +55,7 @@ class PomodoroTimer:
         self.tabs.add(self.tab1, text="Pomodoro")
         self.tabs.add(self.tab2, text="Short Break")
         self.tabs.add(self.tab3, text="Long Break")
+        self.tabs.add(self.tab4, text="Settings")
 
         # Grid Layout
         self.grid_layout = ttk.Frame(self.root)
@@ -57,6 +70,9 @@ class PomodoroTimer:
 
         self.reset_button = ttk.Button(self.grid_layout, text="Reset", command=self.reset_clock)
         self.reset_button.grid(row=0, column=2)
+
+        self.theme_button = ttk.Button(self.tab4, image = self.on_image if self.dark_theme_on == True else self.off_image, command=self.toggle_theme)
+        self.theme_button.pack(pady=40, side=tk.LEFT)
         
         # Functionality Variables
         self.pomodoros = 0
@@ -68,16 +84,18 @@ class PomodoroTimer:
         # Music
         pygame.mixer.init()  # pygame provides a music mixer that can play music
 
-        # Settings
-        # ...
-
         # Pomodoro Counter
         self.pomodoro_counter_label = ttk.Label(self.grid_layout, text=f"Pomodoros: {self.pomodoros}", font=("Ubuntu", 16))
         self.pomodoro_counter_label.grid(row=1, column=0, columnspan=3, pady=10)
-        
+
         # Theme
-        if self.get_theme() == "dark":
+        if self.dark_theme_on:
             self.root['background'] = '#121212'
+            self.grid_layout.config(style="Dark.TFrame")
+
+            self.start_button.config(style="Dark.TButton")
+            self.skip_button.config(style="Dark.TButton")
+            self.reset_button.config(style="Dark.TButton")
 
         # Runs the application
         self.root.mainloop()
@@ -208,9 +226,41 @@ class PomodoroTimer:
         pygame.mixer.music.load("Audio/ring.mp3")
         pygame.mixer.music.play(loops=0)
 
+
     def get_theme(self):
         data = get_data()
         return data["settings"]["theme"]
+
+    def toggle_theme(self):
+        data = get_data()
+
+        if data["settings"]["theme"] == "dark":
+            data["settings"]["theme"] = "white"
+            self.dark_theme_on = False
+            self.theme_button.config(image=self.off_image)
+        else:
+            data["settings"]["theme"] = "dark"
+            self.dark_theme_on = True
+            self.theme_button.config(image=self.on_image)
+
+        update_data(data=data)
+        self.update_theme(data["settings"]["theme"])
+
+    def update_theme(self, theme):
+        if theme == "dark":
+            self.root['background'] = '#121212'
+            self.grid_layout.config(style="Dark.TFrame")
+
+            self.start_button.config(style="Dark.TButton")
+            self.skip_button.config(style="Dark.TButton")
+            self.reset_button.config(style="Dark.TButton")
+        else:
+            self.root['background'] = "white"
+            self.grid_layout.config(style="White.TFrame")
+
+            self.start_button.config(style="White.TButton")
+            self.skip_button.config(style="White.TButton")
+            self.reset_button.config(style="White.TButton")
 
 
 if __name__ == '__main__':
