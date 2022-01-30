@@ -10,14 +10,14 @@ def update_data(data):
         json.dump(data, file, indent=4)
 
 def edit_settings(*args, **kwargs):
-    sound = kwargs.get("sound")
+    audio = kwargs.get("audio")
     theme = kwargs.get("theme")
 
     data = get_data()
     changed = False
 
-    if isinstance(sound, bool) and data["settings"]["sound"] != sound:
-        data["settings"]["sound"] = sound
+    if isinstance(audio, bool) and data["settings"]["audio"] != audio:
+        data["settings"]["audio"] = audio
         changed = True
 
     if isinstance(theme, str) and data["settings"]["theme"] != theme:

@@ -18,6 +18,7 @@ class PomodoroTimer:
 
         # Settings
         self.dark_theme_on = True if self.get_theme() == "dark" else False
+        self.audio_on = self.get_audio()
         self.on_image = PhotoImage(file="Pictures/on.png")
         self.off_image = PhotoImage(file="Pictures/off.png")
         
@@ -71,8 +72,19 @@ class PomodoroTimer:
         self.reset_button = ttk.Button(self.grid_layout, text="Reset", command=self.reset_clock)
         self.reset_button.grid(row=0, column=2)
 
+
+        self.theme_label = ttk.Label(self.tab4, text="Dark Theme:", font=("Ubuntu", 15))
+        self.theme_label.pack(pady=0, side=tk.LEFT, padx=25)
+
         self.theme_button = ttk.Button(self.tab4, image = self.on_image if self.dark_theme_on == True else self.off_image, command=self.toggle_theme)
         self.theme_button.pack(pady=40, side=tk.LEFT)
+
+
+        self.audio_button = ttk.Button(self.tab4, image = self.on_image if self.audio_on == True else self.off_image, command=self.toggle_audio)
+        self.audio_button.pack(pady=40, side=tk.RIGHT, padx=25)
+
+        self.audio_label = ttk.Label(self.tab4, text="Audio:", font=("Ubuntu", 15))
+        self.audio_label.pack(pady=0, side=tk.RIGHT)
         
         # Functionality Variables
         self.pomodoros = 0
@@ -106,7 +118,6 @@ class PomodoroTimer:
             t.start()
             self.running = True
 
-
     def start_timer(self):
         self.stopped = False
         self.skipped = False
@@ -119,7 +130,7 @@ class PomodoroTimer:
                 self.pomodoros += 1
                 self.pomodoro_counter_label.config(text=f"Pomodoros: {self.pomodoros}")  # Updates the pomodoro_counter_label's view
                 
-                if not self.stopped:
+                if not self.stopped and self.audio_on:
                     self.audio_play()
 
                 if self.pomodoros % 4 == 0:
@@ -135,7 +146,7 @@ class PomodoroTimer:
             self.timer(5 * 60, 1)
 
             if not self.stopped or self.skipped:
-                if not self.stopped:
+                if not self.stopped and self.audio_on:
                     self.audio_play()
 
                 self.tabs.select(0)  # Selects the pomodoro tab
@@ -146,7 +157,7 @@ class PomodoroTimer:
             self.timer(15 * 60, 2)
 
             if not self.stopped or self.skipped:
-                if not self.stopped:
+                if not self.stopped and self.audio_on:
                     self.audio_play()
 
                 self.tabs.select(0)  # Selects the pomodoro tab
@@ -261,6 +272,25 @@ class PomodoroTimer:
             self.start_button.config(style="White.TButton")
             self.skip_button.config(style="White.TButton")
             self.reset_button.config(style="White.TButton")
+
+
+    def get_audio(self):
+        data = get_data()
+        return data["settings"]["audio"]
+
+    def toggle_audio(self):
+        data = get_data()
+
+        if data["settings"]["audio"] == True:
+            data["settings"]["audio"] = False
+            self.audio_on = False
+            self.audio_button.config(image=self.off_image)
+        else:
+            data["settings"]["audio"] = True
+            self.audio_on = True
+            self.audio_button.config(image=self.on_image)
+
+        update_data(data=data)
 
 
 if __name__ == '__main__':
