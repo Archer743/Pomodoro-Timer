@@ -1,13 +1,7 @@
-import json
+from sys import path
+path.insert(1, "./Data")
+from Data.get_update_data import *
 
-
-def get_data():
-    with open("Data/data.json", "r") as file:
-        return json.load(file)
-
-def update_data(data):
-    with open("Data/data.json", "w") as file:
-        json.dump(data, file, indent=4)
 
 def edit_settings(*args, **kwargs):
     audio = kwargs.get("audio")
@@ -25,4 +19,9 @@ def edit_settings(*args, **kwargs):
         changed = True
 
     if changed:
+        update_data(data)
+
+def update_presence(pr:bool):
+    if (data := get_data()):
+        data["presence"] = pr
         update_data(data)

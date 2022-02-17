@@ -1,4 +1,5 @@
 {
+    "presence": false,
     "timers": {
         "counter": 0
     },

@@ -2,9 +2,10 @@ import time
 import threading
 import pygame
 import tkinter as tk
-from tkinter import ttk, PhotoImage
+from tkinter import ttk, PhotoImage, messagebox
 
-from Data.settings import get_data, update_data
+from Data.get_update_data import *
+from Data.edit import *
 
 
 class PomodoroTimer:
@@ -110,8 +111,16 @@ class PomodoroTimer:
             self.reset_button.config(style="Dark.TButton")
 
         # Runs the application
-        self.root.mainloop()
+        if not (get_data())["presence"]:
+            update_presence(True)
+            self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+            self.root.mainloop()
+        else:
+            self.already_opened_error()
+            self.root.destroy()
 
+
+    # Main Functionalities
     def start_timer_thread(self):
         if not self.running:
             t = threading.Thread(target=self.start_timer)  # We use this so the timer can be updated while we move the window
@@ -205,6 +214,7 @@ class PomodoroTimer:
         self.skipped = True
 
     
+    # Timers and Audio
     def timer(self, full_seconds:int, tab:int):
         while full_seconds and not self.stopped:
             minutes, seconds = divmod(full_seconds, 60)  # Gets the minutes and the remaining seconds from full_seconds
@@ -238,6 +248,7 @@ class PomodoroTimer:
         pygame.mixer.music.play(loops=0)
 
 
+    # Toggle Themes and Audio
     def get_theme(self):
         data = get_data()
         return data["settings"]["theme"]
@@ -273,7 +284,6 @@ class PomodoroTimer:
             self.skip_button.config(style="White.TButton")
             self.reset_button.config(style="White.TButton")
 
-
     def get_audio(self):
         data = get_data()
         return data["settings"]["audio"]
@@ -291,6 +301,16 @@ class PomodoroTimer:
             self.audio_button.config(image=self.on_image)
 
         update_data(data=data)
+
+
+    # Handlers 
+    def already_opened_error(self):
+        messagebox.showerror("Error", "You've already opened this app!")
+    
+    def on_closing(self):
+        if messagebox.askokcancel("Quit", "Do you want to quit?"):
+            update_presence(False)
+            self.root.destroy()
 
 
 if __name__ == '__main__':

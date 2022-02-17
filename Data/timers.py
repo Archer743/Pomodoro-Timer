@@ -1,13 +1,7 @@
-import json
+from sys import path
+path.insert(1, "./Data")
+from Data.get_update_data import *
 
-
-def get_data():
-    with open("Data/data.json", "r") as file:
-        return json.load(file)
-
-def update_data(data):
-    with open("Data/data.json", "w") as file:
-        json.dump(data, file, indent=4)
 
 def check_input(input:tuple):
     if (100 >= input[0] >= 0) and (60 > input[1] >= 0) and (60 > input[2] >= 0):  # (hours) (minutes) (seconds)
